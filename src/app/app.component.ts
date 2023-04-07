@@ -1,15 +1,13 @@
 import {
 	ChangeDetectionStrategy,
 	Component,
-	OnInit,
-	SettableSignal,
 	signal,
 	effect,
-	computed
+	computed, WritableSignal, Signal
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 
-type signalRow = SettableSignal<{ value: string, count: number }>
+type signalRow =  WritableSignal<{ value: string, count: number }>
 
 @Component({
 	selector: 'app-root',
@@ -19,15 +17,15 @@ type signalRow = SettableSignal<{ value: string, count: number }>
 	imports: [CommonModule],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent implements OnInit {
-	public title: SettableSignal<string> = signal('Hallo');
-	public name: SettableSignal<string> = signal('Michiel');
+export class AppComponent {
+	public title:  WritableSignal<string> = signal('Hallo');
+	public name:  WritableSignal<string> = signal('Michiel');
 
-	public combi = computed(() => {
+	public combi: Signal<string> = computed(() => {
 		return this.title() + ' ' + this.name();
 	})
 
-	public table: SettableSignal<signalRow[]> = signal([
+	public table:  WritableSignal<signalRow[]> = signal([
 		signal({value: 'row1', count: 0}),
 		signal({value: 'row2', count: 0}),
 		signal({value: 'row3', count: 0}),
@@ -35,9 +33,7 @@ export class AppComponent implements OnInit {
 		signal({value: 'row5', count: 0}),
 	])
 
-	ngOnInit() {
-		// this.title.set('title set');
-
+	constructor() {
 		effect(() => {
 			console.log('Why do I trigger..?')
 		});
@@ -56,6 +52,15 @@ export class AppComponent implements OnInit {
 			const row = this.table()[0]();
 			console.log('Row 0 updated to', row.count)
 		});
+
+		effect(() => {
+			this.doStuffWithSignal();
+		})
+	}
+
+	doStuffWithSignal() {
+		const row = this.table()[1]();
+		console.log('effect triggered in function!', row.value);
 	}
 
 	randomUpdate() {
