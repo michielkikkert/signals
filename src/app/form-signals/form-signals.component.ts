@@ -1,38 +1,50 @@
 import {Component, signal, computed, effect} from '@angular/core';
 import {JsonPipe} from '@angular/common';
-import {FormsModule, } from "@angular/forms";
+import {FormGroup, FormsModule, Validators,} from "@angular/forms";
+import {FormSignalsDirective} from "./form-signals.directive";
 
 @Component({
   selector: 'app-form-signals',
   standalone: true,
-  imports: [FormsModule, JsonPipe],
+  imports: [FormsModule, JsonPipe, FormSignalsDirective],
   template: `<p>form-signals works!</p>
-      <form>
-        <input type="text" name="thing1" [ngModel]="form().thing1()" (ngModelChange)="form().thing1.set($event)">
-        <input type="text" name="thing1" [ngModel]="form().thing2()" (ngModelChange)="form().thing2.set($event)">
+      <form [signals]="form">
+        <input type="text" name="thing1">
+        <input type="text" name="thing2">
       </form>
-      <div>{{ computedForm() | json }}</div>
-  `,
-  styleUrls: ['./form-signals.component.scss']
+<!--      <div>{{ computedForm() | json }}</div>-->
+  `
 })
 export class FormSignalsComponent {
 
-  form = signal({
-    thing1: signal('initial value'),
-    thing2: signal('')
-  });
-
-  computedForm = computed(() => {
-    const values: any = {};
-    Object.entries(this.form()).forEach( ([control, controlSignal]) => {
-      values[control] = controlSignal();
-    } );
-    return values;
-  })
-
-  constructor() {
-    effect(() => {
-       console.log('FORM:', this.computedForm());
-    })
+  public form = {
+      updates: this.formUpdate,
+      controls: {
+          thing1: {value: 'thing1 initial value', validator: Validators.required},
+          thing2: {value: '', validator: Validators.required}
+      }
   }
+
+  formUpdate(form: FormGroup) {
+    console.log(form)
+  }
+
+  // form = signal({
+  //   thing1: signal('initial value'),
+  //   thing2: signal('')
+  // });
+  //
+  // computedForm = computed(() => {
+  //   const values: any = {};
+  //   Object.entries(this.form()).forEach( ([control, controlSignal]) => {
+  //     values[control] = controlSignal();
+  //   } );
+  //   return values;
+  // })
+  //
+  // constructor() {
+  //   effect(() => {
+  //      console.log('FORM:', this.computedForm());
+  //   })
+  // }
 }
