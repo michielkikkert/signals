@@ -1,0 +1,20 @@
+<h3>Nested signals</h3>
+
+{{ combi() }} <button (click)="name.set('something else')">Change</button>
+
+
+<br><br>
+
+<div *ngFor="let row of table()">
+    {{row().value}} ({{row().count}}) - <button (click)="incrementRow(row)">increment</button> <!-- (click)="row().count = row().count + 1" -->
+</div>
+
+
+<br>
+
+<br>
+<button (click)="randomUpdate()">Random update</button>
+
+<br>
+<button (click)="addRowMutate()">Add row (mutate)</button>
+<button (click)="addRowUpdate()">Add row (update)</button>
