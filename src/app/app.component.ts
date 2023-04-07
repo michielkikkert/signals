@@ -6,6 +6,7 @@ import {
 	computed, WritableSignal, Signal
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {first} from "rxjs";
 
 type signalRow =  WritableSignal<{ value: string, count: number }>
 
@@ -33,29 +34,40 @@ export class AppComponent {
 		signal({value: 'row5', count: 0}),
 	])
 
+	firstRow = computed(() => {
+		console.log('-COMPUTED!')
+		return this.table()[0]();
+	}, {
+		equal: (a,b) =>  a.value == b.value && a.count === b.count
+	})
+
 	constructor() {
+
 		effect(() => {
-			console.log('Why do I trigger..?')
+			console.log('--> First row computed approach', this.firstRow().count)
 		});
+
+		effect(() => {
+			console.log('without equality', this.table()[0]());
+		})
+
+		// effect(() => {
+		// 	console.log('Why do I trigger..?')
+		// });
 
 		effect(() => {
 			this.table()
 			console.log('Table Updated!')
 		});
 
-		effect(() => {
-			this.table().forEach(row => row()); // This works nicely!
-			console.log('A row updated!')
-		});
+		// effect(() => {
+		// 	this.table().forEach(row => row()); // This works nicely!
+		// 	console.log('A row updated!')
+		// });
 
-		effect(() => {
-			const row = this.table()[0]();
-			console.log('Row 0 updated to', row.count)
-		});
-
-		effect(() => {
-			this.doStuffWithSignal();
-		})
+		// effect(() => {
+		// 	this.doStuffWithSignal();
+		// })
 	}
 
 	doStuffWithSignal() {
