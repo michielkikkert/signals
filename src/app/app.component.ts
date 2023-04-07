@@ -35,16 +35,13 @@ export class AppComponent {
 	])
 
 	firstRow = computed(() => {
-		console.log('-COMPUTED!')
-		return this.table()[0]();
-	}, {
-		equal: (a,b) =>  a.value == b.value && a.count === b.count
-	})
+		return this.table()[0];
+	});
 
 	constructor() {
 
 		effect(() => {
-			console.log('--> First row computed approach', this.firstRow().count)
+			console.log('--> First row computed approach', this.firstRow()())
 		});
 
 		effect(() => {
